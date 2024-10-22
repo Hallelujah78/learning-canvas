@@ -1,45 +1,67 @@
 const canvas = document.querySelector("#myCanvas");
 
+// drawClock
+const drawClock = () => {
+  ctx.arc(0, 0, radius, 0, 2 * Math.PI);
+  ctx.fillStyle = "white";
+  ctx.fill();
+  drawClockFace(ctx, radius);
+  drawNumbers(ctx, radius);
+};
+
+const drawClockFace = (ctx, radius) => {
+  const grad = ctx.createRadialGradient(
+    0,
+    0,
+    radius * 0.95,
+    0,
+    0,
+    radius * 1.05
+  );
+  grad.addColorStop(0, "#333");
+  grad.addColorStop(0.5, "white");
+  grad.addColorStop(1, "#333");
+  ctx.beginPath();
+  ctx.arc(0, 0, radius, 0, 2 * Math.PI);
+  ctx.fillStyle = "white";
+  ctx.fill();
+
+  ctx.strokeStyle = grad;
+  ctx.lineWidth = radius * 0.1;
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.arc(0, 0, 15, 0, Math.PI * 2);
+  ctx.fillStyle = "black";
+  ctx.fill();
+};
+
+function drawNumbers(ctx, radius) {
+  ctx.font = `${radius * 0.15}px arial`;
+  ctx.textBaseline = "middle";
+  ctx.textAlign = "center";
+  for (let num = 1; num < 13; num++) {
+    const ang = (num * Math.PI) / 6;
+    ctx.rotate(ang);
+    ctx.translate(0, -radius * 0.85);
+    ctx.rotate(-ang);
+    ctx.fillText(num.toString(), 0, 0);
+    ctx.rotate(ang);
+    ctx.translate(0, radius * 0.85);
+    ctx.rotate(-ang);
+  }
+}
+
 const ctx = canvas.getContext("2d");
-canvas.clientHeight;
+canvas.height = 600;
+canvas.width = 600;
+// positions
 const topLeft = { x: 0, y: 0 };
-const topRight = { x: 200, y: 0 };
-const center = { x: 200 / 2, y: 100 / 2 };
+const topRight = { x: canvas.height, y: 0 };
+const center = { x: canvas.width / 2, y: canvas.height / 2 };
+// radius
 
-// line 1
-ctx.moveTo(topLeft.x, topLeft.y);
-ctx.lineTo(200, 100);
-ctx.stroke();
+ctx.translate(center.x, center.y);
+const radius = (canvas.height / 2) * 0.9;
 
-// line 2
-ctx.moveTo(center.x, center.y);
-ctx.lineTo(topRight.x, topRight.y);
-ctx.stroke();
-
-// circle
-ctx.beginPath();
-ctx.arc(center.x, center.y, 45, 0, 360, false);
-ctx.stroke();
-
-// text
-ctx.font = "30px Arial";
-ctx.fillText("Hello World", 0, 100);
-
-// stroke text
-ctx.strokeText("Hello World", 0, 70);
-
-// gradient
-const gradient = ctx.createLinearGradient(0, 0, 200, 0);
-gradient.addColorStop(0, "red");
-gradient.addColorStop(1, "green");
-
-// fill with gradient
-ctx.fillStyle = gradient;
-ctx.fillRect(10, 10, 150, 80);
-
-const grd = ctx.createRadialGradient(75, 50, 5, 90, 60, 100);
-grd.addColorStop(0, "green");
-grd.addColorStop(1, "blue");
-
-ctx.fillStyle = grd;
-ctx.fillRect(10, 10, 150, 80);
+drawClock(ctx, radius);
