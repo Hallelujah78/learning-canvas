@@ -7,6 +7,7 @@ const drawClock = () => {
   ctx.fill();
   drawClockFace(ctx, radius);
   drawNumbers(ctx, radius);
+  drawTime(ctx, radius);
 };
 
 const drawClockFace = (ctx, radius) => {
@@ -52,6 +53,37 @@ function drawNumbers(ctx, radius) {
   }
 }
 
+function drawHand(ctx, pos, length, width) {
+  ctx.beginPath();
+  ctx.lineWidth = width;
+  ctx.lineCap = "round";
+  ctx.moveTo(0, 0);
+  ctx.rotate(pos);
+  ctx.lineTo(0, -length);
+  ctx.stroke();
+  ctx.rotate(-pos);
+}
+
+const drawTime = (ctx, radius) => {
+  const now = new Date();
+  let hour = now.getHours();
+  let minute = now.getMinutes();
+  let second = now.getSeconds();
+  //hour
+  hour = hour % 12;
+  hour =
+    (hour * Math.PI) / 6 +
+    (minute * Math.PI) / (6 * 60) +
+    (second * Math.PI) / (360 * 60);
+  drawHand(ctx, hour, radius * 0.5, radius * 0.07);
+  //minute
+  minute = (minute * Math.PI) / 30 + (second * Math.PI) / (30 * 60);
+  drawHand(ctx, minute, radius * 0.8, radius * 0.07);
+  // second
+  second = (second * Math.PI) / 30;
+  drawHand(ctx, second, radius * 0.9, radius * 0.02);
+};
+
 const ctx = canvas.getContext("2d");
 canvas.height = 600;
 canvas.width = 600;
@@ -64,4 +96,4 @@ const center = { x: canvas.width / 2, y: canvas.height / 2 };
 ctx.translate(center.x, center.y);
 const radius = (canvas.height / 2) * 0.9;
 
-drawClock(ctx, radius);
+setInterval(drawClock, 999);
