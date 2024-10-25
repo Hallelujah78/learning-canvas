@@ -5,21 +5,16 @@ html {
     box-sizing: border-box;
 }
 
-html {
-    box-sizing: border-box;
-}
 
 body {
     display: grid;
     place-content: center;
-    height: 100vh;
+    min-height: 100vh;
 }
 
 canvas {
-    height: 600;
-    width: 600;
-    border-radius: 5%;
-    background-color: black;
+
+    border: slategray 1px solid;
 
 }
 
