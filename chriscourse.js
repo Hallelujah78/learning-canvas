@@ -30,16 +30,16 @@ const c = canvas.getContext("2d");
 // c.stroke();
 
 //  arc - circle
-c.beginPath();
-c.arc(
-  window.innerWidth / 2,
-  window.innerHeight / 2,
-  radius,
-  0,
-  Math.PI * 2,
-  false
-);
-c.stroke();
+// c.beginPath();
+// c.arc(
+//   window.innerWidth / 2,
+//   window.innerHeight / 2,
+//   radius,
+//   0,
+//   Math.PI * 2,
+//   false
+// );
+// c.stroke();
 
 // for (let i = 0; i < 5000; i++) {
 //   c.beginPath();
@@ -65,58 +65,65 @@ c.stroke();
 // let x = window.innerWidth / 2;
 
 class Circle {
-  constructor(x, y, dx, dy) {
+  constructor(x, y, dx, dy, radius) {
     this.x = x;
     this.y = y;
     this.dx = dx;
     this.dy = dy;
+    this.radius = radius;
+    this.red = Math.random() * 255;
+    this.green = Math.random() * 255;
+    this.blue = Math.random() * 255;
+    this.opacity = Math.random() + 0.1;
 
     this.draw = () => {
       c.beginPath();
-      c.arc(this.x, this.y, radius, 0, Math.PI * 2, false);
+      c.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
+      c.strokeStyle = `rgba(${this.red}, ${this.green}, ${this.blue}, ${this.opacity}
+        )`;
+      c.fillStyle = `rgba(${this.red}, ${this.green}, ${this.blue}, ${this.opacity}
+        )`;
+      c.fill();
       c.stroke();
     };
 
     this.update = () => {
-      if (this.x + radius > innerWidth || this.x - radius < 0) {
+      if (this.x + this.radius > innerWidth || this.x - this.radius < 0) {
         this.dx = -this.dx;
       }
-      if (this.y + radius > innerHeight || this.y - radius < 0) {
+      if (this.y + this.radius > innerHeight || this.y - this.radius < 0) {
         this.dy = -this.dy;
       }
 
       this.x = this.x + this.dx;
       this.y = this.y + this.dy;
+      this.draw();
     };
   }
 }
 
-const circle = new Circle(Math.random() * innerWidth, 200, 10, 10);
-circle.draw();
+const circleArray = [];
 
-let x = Math.random() * innerWidth;
-let y = Math.random() * innerHeight;
-let dx = (Math.random() - 0.5) * 8;
-let dy = (Math.random() - 0.5) * 8;
+for (let i = 0; i < 100; i++) {
+  const radius = (Math.random() + 0.5) * 30;
+  const x = Math.random() * (innerWidth - radius * 2) + radius;
+  const y = Math.random() * (innerHeight - radius * 2) + radius;
+  const dx = (Math.random() - 0.5) * 8;
+  const dy = (Math.random() - 0.5) * 8;
+
+  const circle = new Circle(x, y, dx, dy, radius);
+  circleArray.push(circle);
+  circle.draw();
+}
 
 const animate = () => {
   requestAnimationFrame(animate);
   c.clearRect(0, 0, innerWidth, innerHeight);
-  circle.draw();
-  circle.update();
-  c.beginPath();
-  c.arc(x, y, radius, 0, Math.PI * 2, false);
-  c.stroke();
 
-  if (x + radius > innerWidth || x - radius < 0) {
-    dx = -dx;
+  for (const circle of circleArray) {
+    circle.update();
+    console.log("update");
   }
-  if (y + radius > innerHeight || y - radius < 0) {
-    dy = -dy;
-  }
-
-  x = x + dx;
-  y = y + dy;
 };
 
 animate();
