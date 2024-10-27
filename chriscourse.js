@@ -64,6 +64,19 @@ const c = canvas.getContext("2d");
 // recursive
 // let x = window.innerWidth / 2;
 
+const mouseCoords = { x: undefined, y: undefined };
+
+window.addEventListener("mousemove", (e) => {
+  mouseCoords.x = e.x;
+  mouseCoords.y = e.y;
+});
+
+window.addEventListener("resize", (e) => {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  init();
+});
+
 class Circle {
   constructor(x, y, dx, dy, radius) {
     this.x = x;
@@ -71,6 +84,8 @@ class Circle {
     this.dx = dx;
     this.dy = dy;
     this.radius = radius;
+    this.minRadius = radius;
+    this.maxRadius = 100;
     this.red = Math.random() * 255;
     this.green = Math.random() * 255;
     this.blue = Math.random() * 255;
@@ -97,23 +112,45 @@ class Circle {
 
       this.x = this.x + this.dx;
       this.y = this.y + this.dy;
+
+      // interactivity
+      if (
+        Math.abs(mouseCoords.x - this.x) < 100 &&
+        Math.abs(mouseCoords.y - this.y) < 100
+      ) {
+        if (this.radius < this.maxRadius) {
+          this.radius = this.radius + 10;
+        }
+      } else if (
+        Math.abs(mouseCoords.x - this.x) > 100 &&
+        Math.abs(mouseCoords.y - this.y) > 100
+      ) {
+        if (this.radius > this.minRadius) this.radius = this.radius - 4;
+      }
+
       this.draw();
     };
   }
 }
 
-const circleArray = [];
+let circleArray = [];
 
-for (let i = 0; i < 100; i++) {
-  const radius = (Math.random() + 0.5) * 30;
-  const x = Math.random() * (innerWidth - radius * 2) + radius;
-  const y = Math.random() * (innerHeight - radius * 2) + radius;
-  const dx = (Math.random() - 0.5) * 8;
-  const dy = (Math.random() - 0.5) * 8;
+// create all our circles
+// called on first load and on each resize
+function init() {
+  // must empty circleArray when called in resize, or you end up adding 200 circles on each resize event
+  circleArray = [];
+  for (let i = 0; i < 200; i++) {
+    const radius = (Math.random() + 0.5) * 30;
+    const x = Math.random() * (innerWidth - radius * 2) + radius;
+    const y = Math.random() * (innerHeight - radius * 2) + radius;
+    const dx = (Math.random() - 0.5) * 8;
+    const dy = (Math.random() - 0.5) * 8;
 
-  const circle = new Circle(x, y, dx, dy, radius);
-  circleArray.push(circle);
-  circle.draw();
+    const circle = new Circle(x, y, dx, dy, radius);
+    circleArray.push(circle);
+    circle.draw();
+  }
 }
 
 const animate = () => {
@@ -122,8 +159,8 @@ const animate = () => {
 
   for (const circle of circleArray) {
     circle.update();
-    console.log("update");
   }
 };
 
+init();
 animate();
